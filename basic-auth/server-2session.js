@@ -16,7 +16,6 @@ app.use(logger('dev'));
 app.use(session({
     name: 'session-id',
     secret: '12345-67890-09876-54321',
-    //unset : 'destroy',
     saveUninitialized: true,
     resave: true,
     store: new FileStore()
@@ -72,7 +71,7 @@ app.use(function (err, req, res, next) {
         'Content-Type': 'text/plain'
     });
     res.end(err.message);
-});
+})
 
 app.listen(port, hostname, function () {
     console.log(`Server running at http://${hostname}:${port}/`);
