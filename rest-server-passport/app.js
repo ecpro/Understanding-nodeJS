@@ -1,4 +1,3 @@
-var config = require('./config');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -13,17 +12,20 @@ var LocalStrategy = require('passport-local').Strategy;
 var dishRouter = require('./routes/dishRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var promoRouter = require('./routes/promoRouter');
+var users = require('./routes/users');
+var routes = require('./routes/index');
 
 var app = express();
 
+
+// import config from config.js
+var config = require('./config');
 
 // connect to mongodb database
 var url = 'mongodb://localhost:27017/conFusion';
 mongoose.connect(config.mongoUrl);
 var db = mongoose.connection;
-
 db.on('error', console.error.bind(console, 'Connection error'));
-
 db.once('open', function () {
   console.log("connected to database server succesfully");
 });
@@ -47,6 +49,9 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// add routers to the application
+app.use('/', routes);
+app.use('/users', users);
 app.use('/dishes', dishRouter());
 app.use('/promotions', promoRouter());
 app.use('/leadership', leaderRouter());
@@ -58,15 +63,27 @@ app.use(function (req, res, next) {
   next(err);
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// error handlers
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.json({
+      message: err.message,
+      error: err
+    });
+  });
+}
 
-  // render the error page
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error');
+  res.json({
+    message: err.message,
+    error: {}
+  });
 });
 
 module.exports = app;

@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var Dishes = require('./../models/dishes-3');
+var Verify = require('./verify');
 
 module.exports = function () {
 
@@ -9,14 +10,14 @@ module.exports = function () {
     dr.use(bodyParser.json());
 
     dr.route('/')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.find({}, function (err, response) {
                 if (err) throw err;
                 res.json(response);
             });
         })
 
-        .post(function (req, res, next) {
+        .post(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.create(req.body, function (err, dish) {
                 if (err) throw err;
                 console.log('dish created');
@@ -30,7 +31,7 @@ module.exports = function () {
             })
         })
 
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.remove({}, (err, response) => {
                 if (err) throw err;
                 res.send(response);
@@ -38,13 +39,13 @@ module.exports = function () {
         });
 
     dr.route('/:dishId')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 if (err) throw err;
                 res.json(dish);
             })
         })
-        .put(function (req, res, next) {
+        .put(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findByIdAndUpdate(req.params.dishId, {
                 $set: req.body
             }, { new: true }, (err, dish) => {
@@ -53,7 +54,7 @@ module.exports = function () {
             })
         })
 
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findByIdAndRemove(req.param.dishId, (err, dish) => {
                 if (err) throw err;
                 console.log(`dish with dish id ${dish.id} deleted`);
