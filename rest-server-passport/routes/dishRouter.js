@@ -17,7 +17,7 @@ module.exports = function () {
             });
         })
 
-        .post(Verify.VerifyOrdinaryUser, function (req, res, next) {
+        .post(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.create(req.body, function (err, dish) {
                 if (err) throw err;
                 console.log('dish created');
@@ -31,7 +31,7 @@ module.exports = function () {
             })
         })
 
-        .delete(Verify.VerifyOrdinaryUser, function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.remove({}, (err, response) => {
                 if (err) throw err;
                 res.send(response);
@@ -45,7 +45,7 @@ module.exports = function () {
                 res.json(dish);
             })
         })
-        .put(Verify.VerifyOrdinaryUser, function (req, res, next) {
+        .put(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findByIdAndUpdate(req.params.dishId, {
                 $set: req.body
             }, { new: true }, (err, dish) => {
@@ -54,7 +54,7 @@ module.exports = function () {
             })
         })
 
-        .delete(Verify.VerifyOrdinaryUser, function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findByIdAndRemove(req.param.dishId, (err, dish) => {
                 if (err) throw err;
                 console.log(`dish with dish id ${dish.id} deleted`);
@@ -63,13 +63,13 @@ module.exports = function () {
         });
 
     dr.route('/:dishId/comments')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findById(req.params.dishId, function (err, dish) {
                 if (err) throw err;
                 res.json(dish.comments);
             });
         })
-        .post(function (req, res, next) {
+        .post(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 if (err) throw err;
                 dish.comments.push(req.body);
@@ -80,7 +80,7 @@ module.exports = function () {
                 });
             });
         })
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 if (err) throw err;
                 if (dish.comments) {
@@ -94,12 +94,12 @@ module.exports = function () {
         });
 
     dr.route('/:dishId/comments/:commentId')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 res.json(dish.comments.id(req.params.commentId));
             });
         })
-        .put(function (req, res, next) {
+        .put(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 if (err) throw err;
                 dish.comments.id(req.params.commentId).remove();
@@ -111,11 +111,11 @@ module.exports = function () {
                 });
             });
         })
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
                 dish.comments.id(req.params.commentId).remove();
-                dish.save(function(err, dish) {
-                    if(err) throw err;
+                dish.save(function (err, dish) {
+                    if (err) throw err;
                     console.log('comment deleted');
                     res.json(dish);
                 });

@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var Leaders = require('./../models/leadership');
+var Verify = require('./verify');
 
 module.exports = function () {
 
@@ -8,14 +9,14 @@ module.exports = function () {
     lr.use(bodyParser.json());
 
     lr.route('/')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Leaders.find((err, leaders) => {
                 if (err) throw err;
                 res.json(leaders);
             })
         })
 
-        .post(function (req, res, next) {
+        .post(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin,function (req, res, next) {
             Leaders.create(req.body, (err, leaders) => {
                 if (err) throw err;
                 console.log('new leaders added');
@@ -23,7 +24,7 @@ module.exports = function () {
             });
         })
 
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Leaders.remove({}, (err, response) => {
                 if (err) throw err;
                 console.log('all leaders assasinated');
@@ -32,13 +33,13 @@ module.exports = function () {
         });
 
     lr.route('/:id')
-        .get(function (req, res, next) {
+        .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Leaders.findById(req.params.id, (err, leader) => {
                 if (err) throw err;
                 res.json(leader);
             })
         })
-        .put(function (req, res, next) {
+        .put(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Leaders.findByIdAndUpdate(req.params.id, {
                 $set: req.body
             }, { new: true }, (err, leader) => {
@@ -47,7 +48,7 @@ module.exports = function () {
                 res.json(leader);
             });
         })
-        .delete(function (req, res, next) {
+        .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Leaders.findByIdAndRemove(req.params.id, function (err, leader) {
                 if (err) throw err;
                 console.log(`leader with id ${leader._id} deleted`);
