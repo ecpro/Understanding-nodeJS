@@ -6,7 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+var authenticate = require('./authenticate');
+
 
 // import all the routes
 var dishRouter = require('./routes/dishRouter');
@@ -17,6 +18,7 @@ var routes = require('./routes/index');
 
 var app = express();
 
+// redirect all requests to HTTPS server
 app.all('*', function (req, res, next) {
   console.log('req start: ', req.secure, req.hostname, req.url, app.get('port'));
   if (req.secure) {
@@ -50,12 +52,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// passport config
-var User = require('./models/user');
 app.use(passport.initialize());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+
 
 // add routers to the application
 app.use('/', routes);
