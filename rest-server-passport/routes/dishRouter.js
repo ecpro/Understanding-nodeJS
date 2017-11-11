@@ -18,7 +18,6 @@ module.exports = function () {
                     res.json(dishes);
                 });
         })
-
         .post(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.create(req.body, function (err, dish) {
                 if (err) throw err;
@@ -32,14 +31,12 @@ module.exports = function () {
                 res.end('Added dish with id ' + id);
             })
         })
-
         .delete(Verify.VerifyOrdinaryUser, Verify.VerifyAdmin, function (req, res, next) {
             Dishes.remove({}, (err, response) => {
                 if (err) throw err;
                 res.send(response);
             });
         });
-
     dr.route('/:dishId')
         .get(Verify.VerifyOrdinaryUser, function (req, res, next) {
             Dishes.findById(req.params.dishId).populate('comments.postedBy').exec((err, dish) => {
@@ -63,14 +60,13 @@ module.exports = function () {
                 res.json(dish);
             })
         });
-
     dr.route('/:dishId/comments')
         .all(Verify.VerifyOrdinaryUser)
         .get(function (req, res, next) {
             Dishes.findById(req.params.dishId).populate('comments.postedBy').exec(function (err, dish) {
                 if (err) throw err;
                 res.json(dish.comments);
-            }); 
+            });
         })
         .post(function (req, res, next) {
             Dishes.findById(req.params.dishId, (err, dish) => {
@@ -98,7 +94,6 @@ module.exports = function () {
                 });
             });
         });
-
     dr.route('/:dishId/comments/:commentId')
         .all(Verify.VerifyOrdinaryUser)
         .get(function (req, res, next) {
