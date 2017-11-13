@@ -26,3 +26,20 @@
 ```
 
 > As long as you exports and module.exports keep pointing to same object there won't be any issue.
+
+----------
+
+# ES6 way of importing and exporting modules
+
+- export and import keywords are used.
+
+```javascript
+    // greet.js
+    export function greet() {
+        console.log('Hi');
+    };
+
+    // app.js
+    import * as greet from 'greet';
+    greet.greet();
+```
